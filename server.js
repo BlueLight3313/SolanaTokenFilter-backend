@@ -1,12 +1,16 @@
-require("dotenv").config();
+const dotenv = require("dotenv");
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
 const path = require("path");
 const bodyParser = require("body-parser");
 const web3 = require("@solana/web3.js");
-const port = process.env.PORT || 8888;
 const { readFileSync, writeFile } = require("fs");
+
+dotenv.config();
+
+const port = process.env.PORT || 8888;
+
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "./Public")));
 app.use(function (req, res, next) {
@@ -22,12 +26,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(require("./Routes/index"));
 
-const RAYDIUM_AUTHORITY_ADDRESS =
-  "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1";
+const RAYDIUM_AUTHORITY_ADDRESS = "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1";
 const SOL_ADDRESS = "So11111111111111111111111111111111111111112";
+
 app.get("/", (req, res) => {
   res.send("Antonio Project Start!");
 });
+
 app.post("/webhook", async (req, res) => {
   const payload = req.body;
   const newToken = await startMonitoring(payload);
@@ -44,11 +49,14 @@ app.post("/webhook", async (req, res) => {
   );
   res.status(200).send("Received and processed");
 });
+
 app.get("/getNewToken", (req, res) => {
+  console.log(req);
   const newToken = JSON.parse(readFileSync("Solana.json"));
   console.log(newToken);
   res.status(200).send(newToken);
 });
+
 function checkValidateTokenAddress(address) {
   // Check validation of address
   try {
@@ -60,9 +68,11 @@ function checkValidateTokenAddress(address) {
     return false;
   }
 }
+
 function getTokenAddress(payload) {
-  const tokenTransfer = payload[0].tokenTransfers;
   let address = "";
+
+  const tokenTransfer = payload[0].tokenTransfers;
   tokenTransfer.map((transfer) => {
     if (
       transfer.toUserAccount === RAYDIUM_AUTHORITY_ADDRESS &&
@@ -70,8 +80,10 @@ function getTokenAddress(payload) {
     )
       address = transfer.mint;
   });
+
   return address;
 }
+
 async function startMonitoring(payload) {
   let response = "";
   const tokenAddress = getTokenAddress(payload);
@@ -82,6 +94,7 @@ async function startMonitoring(payload) {
   } else {
     response = null;
   }
+
   return response;
 }
 

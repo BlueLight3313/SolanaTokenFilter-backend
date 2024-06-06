@@ -19,7 +19,7 @@
   },
   "engines": {
     "npm": ">=8.0.0 <11.0.0",
-    "node": "21.x"
+    "node": "20.x"
   },
   "bugs": {
     "url": "https://github.com/sanengineer/bakergun-backend/issues"
