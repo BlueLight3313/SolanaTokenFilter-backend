@@ -29,13 +29,14 @@ app.use(require("./Routes/index"));
 const RAYDIUM_AUTHORITY_ADDRESS = "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1";
 const SOL_ADDRESS = "So11111111111111111111111111111111111111112";
 
+let newToken;
 app.get("/", (req, res) => {
   res.send("Antonio Project Start!");
 });
 
 app.post("/webhook", async (req, res) => {
   const payload = req.body;
-  const newToken = await startMonitoring(payload);
+  newToken = await startMonitoring(payload);
   writeFile(
     "Solana.json",
     JSON.stringify({ address: newToken }, null, 1),
@@ -54,7 +55,7 @@ app.get("/getNewToken", (req, res) => {
 //  console.log(req);
 //  const newToken = JSON.parse(readFileSync("Solana.json"));
 //  console.log(newToken);
-  res.status(200).send("asdfasdfasdfasdf");
+  res.json({ address: newToken });
 });
 
 function checkValidateTokenAddress(address) {
