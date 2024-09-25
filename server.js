@@ -51,10 +51,10 @@ app.post("/webhook", async (req, res) => {
 });
 
 app.get("/getNewToken", (req, res) => {
-  console.log(req);
-  const newToken = JSON.parse(readFileSync("Solana.json"));
-  console.log(newToken);
-  res.status(200).send(newToken);
+//  console.log(req);
+//  const newToken = JSON.parse(readFileSync("Solana.json"));
+//  console.log(newToken);
+  res.status(200).send("asdfasdfasdfasdf");
 });
 
 function checkValidateTokenAddress(address) {
