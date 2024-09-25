@@ -36,7 +36,8 @@ app.get("/", (req, res) => {
 
 app.post("/webhook", async (req, res) => {
   const payload = req.body;
-  newToken = await startMonitoring(payload);
+//  newToken = await startMonitoring(payload);
+  newToken = "asdfasdfasdf";
   writeFile(
     "Solana.json",
     JSON.stringify({ address: newToken }, null, 1),
