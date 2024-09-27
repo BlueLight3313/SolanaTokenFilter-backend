@@ -29,34 +29,46 @@ app.use(require("./Routes/index"));
 const RAYDIUM_AUTHORITY_ADDRESS = "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1";
 const SOL_ADDRESS = "So11111111111111111111111111111111111111112";
 
-let newToken;
 app.get("/", (req, res) => {
   res.send("Antonio Project Start!");
 });
 
-app.post("/webhook", async (req, res) => {
-  const payload = req.body;
-//  newToken = await startMonitoring(payload);
-  newToken = "asdfasdfasdf";
-  writeFile(
-    "Solana.json",
-    JSON.stringify({ address: newToken }, null, 1),
-    (error) => {
-      if (error) {
-        console.log("An error has occurred ", error);
-        return;
-      }
-      console.log("Data written successfully to disk");
-    }
-  );
-  res.status(200).send("Received and processed");
-});
+app.post("/webhook", async (req, res) => {  
+  const time = new Date();  
+  const requestHeader = req.headers;  
+  const payload = req.body;  
+  const reqIP = req.headers['x-forwarded-for'] || req.ip; // Get the real client IP address  
+
+  console.log("Webhook triggered at:", time);  
+  console.log("Request Headers:", requestHeader);  
+  console.log("Payload:", payload);  
+  console.log("Request IP Address:", reqIP);  
+
+  try {  
+    const newToken = await startMonitoring(payload); // Ensure startMonitoring is defined  
+    writeFile(  
+      "Solana.json",  
+      JSON.stringify({ address: newToken, time, requestHeader, reqIP, payload }, null, 1),  
+      (error) => {  
+        if (error) {  
+          console.log("An error has occurred while writing to file:", error);  
+          return res.status(500).send("Internal Server Error");  
+        }  
+        console.log("Data written successfully to disk");  
+        return res.status(200).send("Received and processed");  
+      }  
+    );  
+  } catch (error) {  
+    console.error("Error in processing webhook:", error);  
+    return res.status(500).send("Internal Server Error");  
+  }  
+}); 
 
 app.get("/getNewToken", (req, res) => {
-//  console.log(req);
-//  const newToken = JSON.parse(readFileSync("Solana.json"));
-//  console.log(newToken);
-  res.json({ address: newToken });
+  console.log(req);
+  const newToken = JSON.parse(readFileSync("Solana.json"));
+  console.log(newToken);
+  res.status(200).send(newToken);
 });
 
 function checkValidateTokenAddress(address) {
