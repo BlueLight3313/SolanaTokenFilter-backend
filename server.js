@@ -35,6 +35,7 @@ app.get("/", (req, res) => {
 
 app.post("/webhook", async (req, res) => { 
   console.log("===========================webhook function called!=======================");
+  /*
   const time = new Date();  
   const requestHeader = req.headers;  
   const payload = req.body;  
@@ -43,13 +44,14 @@ app.post("/webhook", async (req, res) => {
   console.log("Webhook triggered at:", time);  
   console.log("Request Headers:", requestHeader);  
   console.log("Payload:", payload);  
-  console.log("Request IP Address:", reqIP);  
+  console.log("Request IP Address:", reqIP);
+  */ 
 
   try {  
     const newToken = await startMonitoring(payload); // Ensure startMonitoring is defined  
     writeFile(  
       "Solana.json",  
-      JSON.stringify({ address: newToken, time, requestHeader, reqIP, payload }, null, 1),  
+      JSON.stringify({ address: newToken }, null, 1),  
       (error) => {  
         if (error) {  
           console.log("An error has occurred while writing to file:", error);  
