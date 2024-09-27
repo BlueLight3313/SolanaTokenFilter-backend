@@ -30,15 +30,15 @@ const RAYDIUM_AUTHORITY_ADDRESS = "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1"
 const SOL_ADDRESS = "So11111111111111111111111111111111111111112";
 
 app.get("/", (req, res) => {
-  res.send("Antonio Project Start!");
+  res.send("Solan token filter backend Project Start!");
 });
 
 app.post("/webhook", async (req, res) => { 
   console.log("===========================webhook function called!=======================");
+  const payload = req.body;
   /*
   const time = new Date();  
-  const requestHeader = req.headers;  
-  const payload = req.body;  
+  const requestHeader = req.headers;   
   const reqIP = req.headers['x-forwarded-for'] || req.ip; // Get the real client IP address  
 
   console.log("Webhook triggered at:", time);  
@@ -69,7 +69,6 @@ app.post("/webhook", async (req, res) => {
 
 app.get("/getNewToken", (req, res) => {
   console.log("===========================getNewToken function called!=======================");
-  console.log(req);
   const newToken = JSON.parse(readFileSync("Solana.json"));
   console.log(newToken);
   res.status(200).send(newToken);
