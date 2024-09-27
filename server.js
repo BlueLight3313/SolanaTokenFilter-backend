@@ -33,7 +33,8 @@ app.get("/", (req, res) => {
   res.send("Antonio Project Start!");
 });
 
-app.post("/webhook", async (req, res) => {  
+app.post("/webhook", async (req, res) => { 
+  console.log("===========================webhook function called!=======================");
   const time = new Date();  
   const requestHeader = req.headers;  
   const payload = req.body;  
@@ -65,6 +66,7 @@ app.post("/webhook", async (req, res) => {
 }); 
 
 app.get("/getNewToken", (req, res) => {
+  console.log("===========================getNewToken function called!=======================");
   console.log(req);
   const newToken = JSON.parse(readFileSync("Solana.json"));
   console.log(newToken);
