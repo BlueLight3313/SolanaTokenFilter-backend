@@ -27,6 +27,7 @@
   "homepage": "https://github.com/sanengineer/bakergun-backend#readme",
   "dependencies": {
     "@solana/web3.js": "^1.91.8",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.5",
     "express": "^4.17.1",

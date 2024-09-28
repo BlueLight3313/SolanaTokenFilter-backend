@@ -1,11 +1,11 @@
 const dotenv = require("dotenv");
 const express = require("express");
 const morgan = require("morgan");
+const { format } = require('date-fns');
 const app = express();
 const path = require("path");
 const bodyParser = require("body-parser");
 const web3 = require("@solana/web3.js");
-const { readFileSync, writeFile } = require("fs");
 
 dotenv.config();
 
@@ -24,63 +24,66 @@ app.use(function (req, res, next) {
 app.use(morgan("tiny"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(require("./Routes/index"));
 
 const RAYDIUM_AUTHORITY_ADDRESS = "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1";
 const SOL_ADDRESS = "So11111111111111111111111111111111111111112";
 
+// Global variable to hold the JSON object
+let jsonData = { address: "" };
+
+// Lock for managing access
+let isWriting = false;
+
+const getFormattedTimestamp = () => {
+  return format(new Date(), 'yyyy-MM-dd HH:mm:ss.SSSSS');
+}
+
+// Middleware to check if writing is in progress
+const lockMiddleware = (req, res, next) => {
+  if (isWriting) {
+    // If writing is in progress, wait and try again
+    return setTimeout(() => lockMiddleware(req, res, next), 100); // Retry after 100ms
+  }
+  next();
+};
+
 app.get("/", (req, res) => {
-  res.send("Solan token filter backend Project Start!");
+  res.send("Solana token filter backend Project Start!");
 });
 
-app.post("/webhook", async (req, res) => { 
-  console.log("===========================webhook function called!=======================");
+app.post("/webhook", lockMiddleware, async (req, res) => { 
   const payload = req.body;
-  /*
-  const time = new Date();  
-  const requestHeader = req.headers;   
-  const reqIP = req.headers['x-forwarded-for'] || req.ip; // Get the real client IP address  
-
-  console.log("Webhook triggered at:", time);  
-  console.log("Request Headers:", requestHeader);  
-  console.log("Payload:", payload);  
-  console.log("Request IP Address:", reqIP);
-  */ 
 
   try {  
-    const newToken = await startMonitoring(payload); // Ensure startMonitoring is defined  
-    writeFile(  
-      "Solana.json",  
-      JSON.stringify({ address: newToken }, null, 1),  
-      (error) => {  
-        if (error) {  
-          console.log("An error has occurred while writing to file:", error);  
-          return res.status(500).send("Internal Server Error");  
-        }  
-        console.log("Data written successfully to disk");  
-        return res.status(200).send("Received and processed");  
-      }  
-    );  
+    isWriting = true; // Acquire lock for writing
+
+    const newToken = await startMonitoring(payload);
+    
+    // Update the global variable
+    jsonData.address = newToken == null ? jsonData.address : newToken;
+    
+    // console.log(`[${getFormattedTimestamp()}] RECV TOKEN ADDR: ${jsonData.address}`);
+    return res.status(200).send("Received and processed");  
   } catch (error) {  
     console.error("Error in processing webhook:", error);  
     return res.status(500).send("Internal Server Error");  
-  }  
+  } finally {
+    isWriting = false; // Release lock
+  }
 }); 
 
+// Endpoint for third-party service to read the latest token
 app.get("/getNewToken", (req, res) => {
-  console.log("===========================getNewToken function called!=======================");
-  const newToken = JSON.parse(readFileSync("Solana.json"));
-  console.log(newToken);
-  res.status(200).send(newToken);
+  // Return the global variable
+  const now = new Date();
+  // console.log(`[${getFormattedTimestamp()}] SEND TOKEN ADDR: ${jsonData.address}`);
+  res.status(200).send(jsonData);
 });
 
 function checkValidateTokenAddress(address) {
-  // Check validation of address
   try {
-    // Check Solana wallet validation.
     let pubKey = new web3.PublicKey(address);
-    web3.PublicKey.isOnCurve(pubKey.toBuffer());
-    return true;
+    return web3.PublicKey.isOnCurve(pubKey.toBuffer());
   } catch {
     return false;
   }
@@ -90,7 +93,7 @@ function getTokenAddress(payload) {
   let address = "";
 
   const tokenTransfer = payload[0].tokenTransfers;
-  tokenTransfer.map((transfer) => {
+  tokenTransfer.forEach((transfer) => {
     if (
       transfer.toUserAccount === RAYDIUM_AUTHORITY_ADDRESS &&
       transfer.mint !== SOL_ADDRESS
@@ -106,7 +109,6 @@ async function startMonitoring(payload) {
   const tokenAddress = getTokenAddress(payload);
   const validation = checkValidateTokenAddress(tokenAddress);
   if (validation) {
-    console.log("ski312-tokenAddress", tokenAddress);
     response = tokenAddress;
   } else {
     response = null;
