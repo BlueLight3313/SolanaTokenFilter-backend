@@ -9,7 +9,7 @@ const web3 = require("@solana/web3.js");
 
 dotenv.config();
 
-const port = process.env.PORT || 8888;
+const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "./Public")));
@@ -34,10 +34,6 @@ let jsonData = { address: "" };
 // Lock for managing access
 let isWriting = false;
 
-const getFormattedTimestamp = () => {
-  return format(new Date(), 'yyyy-MM-dd HH:mm:ss.SSSSS');
-}
-
 // Middleware to check if writing is in progress
 const lockMiddleware = (req, res, next) => {
   if (isWriting) {
@@ -48,7 +44,7 @@ const lockMiddleware = (req, res, next) => {
 };
 
 app.get("/", (req, res) => {
-  res.send("Solana token filter backend Project Start!");
+  res.send("Solana Memecoin Monitoring server is Working!");
 });
 
 app.post("/webhook", lockMiddleware, async (req, res) => { 
@@ -62,7 +58,6 @@ app.post("/webhook", lockMiddleware, async (req, res) => {
     // Update the global variable
     jsonData.address = newToken == null ? jsonData.address : newToken;
     
-    // console.log(`[${getFormattedTimestamp()}] RECV TOKEN ADDR: ${jsonData.address}`);
     return res.status(200).send("Received and processed");  
   } catch (error) {  
     console.error("Error in processing webhook:", error);  
@@ -75,10 +70,12 @@ app.post("/webhook", lockMiddleware, async (req, res) => {
 // Endpoint for third-party service to read the latest token
 app.get("/getNewToken", (req, res) => {
   // Return the global variable
-  const now = new Date();
-  // console.log(`[${getFormattedTimestamp()}] SEND TOKEN ADDR: ${jsonData.address}`);
   res.status(200).send(jsonData);
 });
+
+// Routes
+app.use('/api/v1/auth', require('./routes/auth'));
+app.use('/api/v1/setting', require('./routes/setting'));
 
 function checkValidateTokenAddress(address) {
   try {
@@ -119,5 +116,5 @@ async function startMonitoring(payload) {
 
 // Listen Port
 app.listen(port, () => {
-  console.log(`🍩 Solana Backend by 🧔 now running 🚀 on  heroku`);
+  console.log(`Solana Memecoin Monitoring server - now running on  heroku`);
 });
