@@ -22,6 +22,8 @@
   "usage": {
     "autoStart": true,
     "dataRequestPeriod": "67",
-    "notificationShowTime": "78"
+    "notificationShowTime": "78",
+    "preminedPctThreshold": "31",
+    "lockedPctThreshold": "2"
   }
 }
