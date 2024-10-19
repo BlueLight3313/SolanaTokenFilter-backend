@@ -11,19 +11,19 @@
   },
   "filter": {
     "preminedPercent": {
-      "min": "51",
-      "max": "1001"
+      "min": "0.1",
+      "max": "20"
     },
     "pooledSol": {
-      "min": "234",
-      "max": "10000"
+      "min": "1",
+      "max": "1000"
     }
   },
   "usage": {
     "autoStart": true,
-    "dataRequestPeriod": "67",
-    "notificationShowTime": "78",
-    "preminedPctThreshold": "31",
+    "dataRequestPeriod": "2",
+    "notificationShowTime": "5",
+    "preminedPctThreshold": "10",
     "lockedPctThreshold": "2"
   }
 }
