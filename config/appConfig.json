@@ -23,7 +23,8 @@
     "autoStart": true,
     "dataRequestPeriod": "2",
     "notificationShowTime": "5",
-    "preminedPctThreshold": "10",
-    "lockedPctThreshold": "2"
+    "preminedPctThreshold": "0.1",
+    "lockedPctThreshold": "0.1",
+    "timeExceedThreshold": "600"
   }
 }
