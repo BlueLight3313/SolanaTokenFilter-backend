@@ -24,6 +24,7 @@ app.use(function (req, res, next) {
 app.use(morgan("tiny"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 
 const RAYDIUM_AUTHORITY_ADDRESS = "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1";
 const SOL_ADDRESS = "So11111111111111111111111111111111111111112";
