@@ -77,6 +77,7 @@ app.get("/getNewToken", (req, res) => {
 // Routes
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/setting', require('./routes/setting'));
+app.use('/api/v1/transaction', require('./routes/transaction'));
 
 function checkValidateTokenAddress(address) {
   try {
